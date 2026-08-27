@@ -109,6 +109,9 @@ export const INCLINES = [
   { n: 'Monongahela Incline', lower: [-243.7, 946.5], upper: [-334.8, 1074.6], gauge: 4.4, cars: 2 },
 ];
 
+/** KO 매핑된 INCLINES 라벨 (display only) */
+export const INCLINES_KO = INCLINES.map(inc => ({ ...inc, n: 'Duquesne Incline' === inc.n ? '듀케인 인클라인' : 'Monongahela Incline' === inc.n ? '모논거헐라 인클라인' : inc.n }));
+
 function buildIncline(spec, yFn) {
   const g = new THREE.Group();
   g.name = spec.n;

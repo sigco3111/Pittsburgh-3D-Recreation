@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: './',
+  base: '/Pittsburgh-3D-Recreation/',
   server: {
     host: true,
     port: 5173,

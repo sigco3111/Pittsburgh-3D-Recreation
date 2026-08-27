@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { ko } from '../scripts/i18n-ko.js';
 
 /**
  * Pittsburgh's river crossings, each modelled as the structural type it really
@@ -795,7 +796,7 @@ export function buildBridges(bridges, { yFn, waterIndex, addLabel, dayMode = tru
 
       if (!lateral) {
         const crest = rec.tower ? towerHeight(rec) + 4 : rec.rise ?? rec.depth ?? 12;
-        addLabel(b.n, at(frame, (main[0] + main[1]) * 0.5, (upperY ?? deckY) + crest + 22));
+        addLabel(ko(b.n), at(frame, (main[0] + main[1]) * 0.5, (upperY ?? deckY) + crest + 22));
       }
     }
   }

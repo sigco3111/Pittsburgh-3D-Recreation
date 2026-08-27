@@ -38,6 +38,7 @@ import {
   saveSettings,
   pixelRatioFor,
 } from './quality.js';
+import { ko } from '../scripts/i18n-ko.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -1078,7 +1079,7 @@ const LABELLED = [
   ['CARNEGIE MUSEUM', 'Carnegie Museum of Natural History'],
   ['SOLDIERS & SAILORS MEMORIAL', 'Soldiers and Sailors Memorial Hall'],
   ['PHIPPS CONSERVATORY', 'Phipps Conservatory'],
-];
+].map(([t, w]) => [ko(t), w]);
 
 /** Districts, which name a place rather than a building. */
 const DISTRICT_LABELS = [
@@ -1086,7 +1087,7 @@ const DISTRICT_LABELS = [
   ['MOUNT WASHINGTON', -720, 1000, 60],
   ['THE STRIP DISTRICT', 1500, -900, 50],
   ['OAKLAND', 4200, 0, 60],
-];
+].map(([t, x, z, l]) => [ko(t), x, z, l]);
 
 function placeLandmarkLabels(data, yFn) {
   const byName = new Map();
@@ -1118,7 +1119,7 @@ function placeLandmarkLabels(data, yFn) {
   // label cannot drift away from the incline it names.
   for (const inc of INCLINES) {
     const [x, z] = inc.upper;
-    addLabel(inc.n.toUpperCase(), new THREE.Vector3(x, yFn(x, z) + 34, z), 1);
+    addLabel(ko(inc.n).toUpperCase(), new THREE.Vector3(x, yFn(x, z) + 34, z), 1);
   }
 }
 
@@ -1492,7 +1493,7 @@ async function buildCity(data, landcover, fabric) {
   placeLandmarkLabels(data, yFn);
 
   const total = buildingCount + fabricCount;
-  layersEl.textContent = `buildings ${total.toLocaleString()} · live`;
+  layersEl.textContent = `건물 ${total.toLocaleString()} · 실시간 렌더링`;
   return total;
 }
 
