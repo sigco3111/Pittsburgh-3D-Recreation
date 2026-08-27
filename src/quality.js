@@ -45,8 +45,8 @@ const QUALITY_KEY = 'pgh-quality';
 const RESOLUTION_KEY = 'pgh-resolution';
 const WEATHER_KEY = 'pgh-weather';
 
-export function defaultQuality(constrained) {
-  return constrained ? 'medium' : 'high';
+export function defaultQuality() {
+  return 'medium';
 }
 
 export function defaultResolution(constrained) {
@@ -55,7 +55,7 @@ export function defaultResolution(constrained) {
 
 export function loadSettings(constrained) {
   const qualityRaw = (localStorage.getItem(QUALITY_KEY) || '').toLowerCase();
-  const quality = QUALITY[qualityRaw] ? qualityRaw : defaultQuality(constrained);
+  const quality = QUALITY[qualityRaw] ? qualityRaw : defaultQuality();
   const resRaw = Number(localStorage.getItem(RESOLUTION_KEY));
   const resolution = RESOLUTION_PCTS.includes(resRaw) ? resRaw : defaultResolution(constrained);
   const weatherRaw = (localStorage.getItem(WEATHER_KEY) || '').toLowerCase();
