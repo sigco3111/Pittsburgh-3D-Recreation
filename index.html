@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>피츠버그 · 3D 도시 모형 · 미터 좌표</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/Pittsburgh-3D-Recreation/assets/index-CcHufjIq.js"></script>
+    <link rel="stylesheet" crossorigin href="/Pittsburgh-3D-Recreation/assets/index-Dg1C7kdG.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="c"></canvas>
+      <div class="crosshair" aria-hidden="true"></div>
+      <div class="loader" id="loader">
+        <div class="loader-bar"><span></span></div>
+        <div class="loader-text">피츠버그 생성 중…</div>
+      </div>
+    </div>
+
+    <header class="hud-tl">
+      <div class="eyebrow">건축 · 미터 좌표</div>
+      <h1>피츠버그</h1>
+      <p class="meta">
+        OSM 강, 도로, 공원, 다운타운 건물 데이터. +X=동, +Y=위, +Z=남. 세 강 합류점 = 원점.
+      </p>
+    </header>
+
+    <aside class="hud-tr">
+      <div class="eyebrow">레이어</div>
+      <div class="layers" id="layers">건물 · 로딩 중</div>
+      <button type="button" class="settings-toggle" id="settings-toggle" aria-expanded="false" aria-controls="settings">
+        설정
+      </button>
+      <div class="settings-panel" id="settings" hidden>
+        <div class="settings-kicker">품질</div>
+        <div class="seg" id="quality-seg" role="group" aria-label="품질">
+          <button type="button" data-quality="low">낮음</button>
+          <button type="button" data-quality="medium">중간</button>
+          <button type="button" data-quality="high">높음</button>
+          <button type="button" data-quality="ultra">울트라</button>
+        </div>
+        <div class="settings-kicker">해상도</div>
+        <div class="seg" id="resolution-seg" role="group" aria-label="해상도">
+          <button type="button" data-resolution="50">50%</button>
+          <button type="button" data-resolution="75">75%</button>
+          <button type="button" data-resolution="100">100%</button>
+          <button type="button" data-resolution="150">150%</button>
+          <button type="button" data-resolution="200">200%</button>
+        </div>
+        <p class="settings-note">도시가 끊겨 보이면 둘 다 낮춰 주세요. 모바일에서는 Bloom 효과가 꺼집니다.</p>
+      </div>
+    </aside>
+
+    <nav class="hud-weather" id="weather" aria-label="날씨">
+      <button type="button" data-weather="sunny" class="active">맑음</button>
+      <button type="button" data-weather="rain">비</button>
+      <button type="button" data-weather="snow">눈</button>
+    </nav>
+
+    <nav class="hud-nav" id="nav">
+      <button type="button" data-view="aerial">항공뷰</button>
+      <button type="button" data-view="downtown" class="active">다운타운</button>
+      <button type="button" data-view="point">포인트</button>
+      <button type="button" data-view="bridges">다리</button>
+      <button type="button" data-view="stadiums">경기장</button>
+      <button type="button" data-view="oakland">오클랜드</button>
+      <button type="button" data-view="cathedral">대학교</button>
+      <button type="button" data-view="mountwashington">마운트워싱턴</button>
+      <button type="button" data-view="rotate">회전</button>
+    </nav>
+
+  </body>
+</html>
