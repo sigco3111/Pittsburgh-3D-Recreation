@@ -59,6 +59,19 @@ body {
 .label-layer * {
   pointer-events: none !important;
 }
+/* CSS2DRenderer's root <div> defaults to 300x150 placeholder until setSize
+   runs. Even after setSize, its inline positioning can sit on top of the
+   body background (#05070c). Force the placeholder area to be transparent
+   and stretched to fill the parent so no dark rectangle can leak through
+   behind the city. */
+.label-layer {
+  background: transparent !important;
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+}
 
 .hud-tl {
   top: 28px;

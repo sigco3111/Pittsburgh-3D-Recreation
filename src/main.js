@@ -202,7 +202,13 @@ scene.add(weatherFx.root);
 
 let composer;
 function bloomAllowed() {
-  return !CONSTRAINED_GPU && QUALITY[settings.quality].bloom;
+  // Constrained GPU (mobile/Safari) → always OFF (FBO uncleared slab).
+  if (CONSTRAINED_GPU) return false;
+  // Medium / low quality never runs bloom — desktop Safari still has the
+  // same FBO uncleared hazard, so refuse rather than risk a black slab.
+  const q = settings.quality;
+  if (q === 'low' || q === 'medium') return false;
+  return QUALITY[q].bloom;
 }
 function disposeComposer() {
   if (!composer) return;
