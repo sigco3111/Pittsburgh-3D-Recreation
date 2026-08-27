@@ -74,8 +74,14 @@ function isConstrainedGpu() {
 const CONSTRAINED_GPU = isConstrainedGpu();
 let settings = loadSettings(CONSTRAINED_GPU);
 
+/**
+ * Runtime cap on the drawing-buffer scale. The render guard below lowers it
+ * when the rasteriser starts dropping tiles at the requested size.
+ */
+let ratioCap = 2;
+
 function targetPixelRatio() {
-  return pixelRatioFor(settings.resolution);
+  return Math.min(pixelRatioFor(settings.resolution), ratioCap);
 }
 
 const scene = new THREE.Scene();
@@ -1655,6 +1661,70 @@ window.visualViewport?.addEventListener('resize', onResize);
 window.visualViewport?.addEventListener('scroll', onResize);
 onResize();
 
+/**
+ * Tile-drop guard.
+ *
+ * When the drawing buffer crosses what the rasteriser can actually deliver —
+ * a crashed GPU process fallen back to software, or the software path this
+ * scene trips on above roughly 960x540 — the frame comes back with whole
+ * tiles at pure black while the strips between them still show the scene.
+ * Nothing in WebGL reports it: no context loss, no GL error, no console
+ * output. It reads as a black slab over the middle of the city, with the
+ * HTML labels rendering on top as if the scene were gone.
+ *
+ * The only reliable check is to read pixels back. Once a second a spread of
+ * rows across the buffer is sampled and the fraction of pure-black samples
+ * measured. A live frame never gets near the threshold: the sky clears to
+ * daylight blue in every weather, and city shadows bottom out above it. A
+ * dropped-tile frame is 30%+ black. Each detection steps the render scale
+ * down a notch, which shrinks the buffer below the rasteriser's limit.
+ */
+const GUARD_ROWS = 12;
+const guard = { checkedAt: 0, settleUntil: 0 };
+const guardRow = { buf: null, w: 0 };
+
+function guardBlackFraction() {
+  const gl = renderer.getContext();
+  const w = gl.drawingBufferWidth;
+  const h = gl.drawingBufferHeight;
+  if (guardRow.w !== w) {
+    guardRow.buf = new Uint8Array(w * 4);
+    guardRow.w = w;
+  }
+  const row = guardRow.buf;
+  let black = 0;
+  let total = 0;
+  for (let r = 0; r < GUARD_ROWS; r++) {
+    // GL row 0 is the BOTTOM; spread samples over the full height either way.
+    const y = Math.min(h - 1, Math.round(((r + 0.5) / GUARD_ROWS) * h));
+    gl.readPixels(0, y, w, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+    for (let i = 0; i < w * 4; i += 16) {
+      total++;
+      if (row[i] + row[i + 1] + row[i + 2] === 0) black++;
+    }
+  }
+  return total ? black / total : 0;
+}
+
+function renderGuard(now) {
+  if (now - guard.checkedAt < 1000) return;
+  guard.checkedAt = now;
+  if (now < guard.settleUntil) return;
+  if (ratioCap <= 0.5) return;
+
+  if (guardBlackFraction() > 0.3) {
+    const prev = ratioCap;
+    ratioCap = Math.max(0.5, Math.floor(ratioCap * 0.75 * 100) / 100);
+    onResize();
+    // Let the smaller buffer render a few frames before judging it again.
+    guard.settleUntil = now + 4000;
+    console.warn(
+      `[render] frame is mostly dropped tiles at ${prev.toFixed(2)}x — ` +
+        `lowering render scale to ${ratioCap.toFixed(2)}x`,
+    );
+  }
+}
+
 let lastTick = performance.now();
 function tick(now) {
   requestAnimationFrame(tick);
@@ -1698,6 +1768,7 @@ function tick(now) {
   } else {
     renderer.render(scene, camera);
   }
+  renderGuard(now);
   camera.updateMatrixWorld();
   updateLabels(viewW, viewH);
   labelRenderer.render(scene, camera);
